@@ -10,31 +10,37 @@ class CarrosListView extends StatefulWidget {
   State<CarrosListView> createState() => _CarrosListViewState();
 }
 
-class _CarrosListViewState extends State<CarrosListView> with AutomaticKeepAliveClientMixin<CarrosListView>{
+class _CarrosListViewState extends State<CarrosListView>
+    with AutomaticKeepAliveClientMixin<CarrosListView> {
+  List<Carro>? carros;
+
   @override
   bool get wantKeepAlive => true;
 
   @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return _body();
-  }
+  void initState() {
+    super.initState();
 
-  _body() {
     Future<List<Carro>> future = CarrosApi.getCarros(widget.tipo);
 
-    return FutureBuilder(
-      future: future,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        List<Carro> carros = snapshot.data as List<Carro>;
-        return _listView(carros);
-      },
-    );
+    future.then((List<Carro> carros) {
+      setState(() {
+        this.carros = carros;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    if (carros == null) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    return _listView(carros!);
   }
 
   Container _listView(List<Carro> carros) {
@@ -70,21 +76,6 @@ class _CarrosListViewState extends State<CarrosListView> with AutomaticKeepAlive
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 14),
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.end,
-                    //   children: <Widget>[
-                    //     TextButton(
-                    //       child: const Text('DETALHES'),
-                    //       onPressed: () {/* ... */},
-                    //     ),
-                    //     const SizedBox(width: 8),
-                    //     TextButton(
-                    //       child: const Text('SHARE'),
-                    //       onPressed: () {/* ... */},
-                    //     ),
-                    //     const SizedBox(width: 8),
-                    //   ],
-                    // ),
                     ButtonBarTheme(
                       data: ButtonBarTheme.of(context),
                       child: ButtonBar(

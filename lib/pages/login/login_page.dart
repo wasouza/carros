@@ -5,15 +5,8 @@ import 'package:carros/pages/utils/alert.dart';
 import 'package:carros/pages/widgets/app_button.dart';
 import 'package:carros/pages/widgets/app_text.dart';
 import 'package:flutter/material.dart';
-
 import '../api_response.dart';
 import '../utils/nav.dart';
-
-final _formKey = GlobalKey<FormState>();
-final _tLogin = TextEditingController();
-final _tSenha = TextEditingController();
-final _focusSenha = FocusNode();
-bool _showProgress = false;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -23,6 +16,25 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _tLogin = TextEditingController();
+  final _tSenha = TextEditingController();
+  final _focusSenha = FocusNode();
+  bool _showProgress = false;
+
+  void initState(){
+    super.initState();
+
+    Future<Usuario> future = Usuario.get();
+    future.then((Usuario user){
+      if(user != null) {
+        setState(() {
+          push(context, HomePage(), replace: true);
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
